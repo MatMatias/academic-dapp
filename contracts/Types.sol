@@ -15,5 +15,5 @@ struct Subject {
 
 enum Stage {
     STUDENT_REGISTRATION,
-    GRADES_LAUNCH
+    GRADE_LAUNCH
 }
