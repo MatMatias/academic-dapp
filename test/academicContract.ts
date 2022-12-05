@@ -3,7 +3,7 @@ import { deployContracts } from "scripts/deployContracts";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { Stage } from "./enums";
 
-describe("AcademicContract", function () {
+describe("AcademicContract", async function () {
   it("Should be on student registration stage when deployed", async function () {
     const { academicContract } = await loadFixture(deployContracts);
 
