@@ -6,11 +6,9 @@ import "./Modifiers.sol";
 import "./Types.sol";
 
 contract SubjectContract is Modifiers {
-    address owner;
     address _academicContractAddress;
 
     constructor(address academicContractAddress) {
-        owner = msg.sender;
         _academicContractAddress = academicContractAddress;
     }
 }

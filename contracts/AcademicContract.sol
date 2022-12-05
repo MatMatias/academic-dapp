@@ -6,19 +6,17 @@ import "./Modifiers.sol";
 import "./Types.sol";
 
 contract AcademicContract is Modifiers {
-    address owner;
     address _studentContractAddress;
     address _subjectContractAddress;
     Stage public stage;
 
     constructor() {
         stage = Stage.STUDENT_REGISTRATION;
-        owner = msg.sender;
     }
 
     event SpecificStageSet(Stage stage, string message);
 
-    function setGradeLaunchStage() public onlyOwner(owner) {
+    function setGradeLaunchStage() public onlyOwner {
         stage = Stage.GRADE_LAUNCH;
         emit SpecificStageSet(
             Stage.GRADE_LAUNCH,
@@ -26,7 +24,7 @@ contract AcademicContract is Modifiers {
         );
     }
 
-    function setStudentRegistrationStage() public onlyOwner(owner) {
+    function setStudentRegistrationStage() public onlyOwner {
         stage = Stage.STUDENT_REGISTRATION;
         emit SpecificStageSet(
             Stage.STUDENT_REGISTRATION,
@@ -38,7 +36,7 @@ contract AcademicContract is Modifiers {
 
     function setStudentContractAddress(address studentContractAdddress)
         public
-        onlyOwner(owner)
+        onlyOwner
     {
         _studentContractAddress = studentContractAdddress;
         emit ContractAddressSet(
@@ -49,7 +47,7 @@ contract AcademicContract is Modifiers {
 
     function setSubjectContractAddress(address subjectContractAdddress)
         public
-        onlyOwner(owner)
+        onlyOwner
     {
         _subjectContractAddress = subjectContractAdddress;
         emit ContractAddressSet(
