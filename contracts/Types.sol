@@ -10,7 +10,7 @@ struct Student {
 struct Subject {
     uint256 id;
     string name;
-    address professor;
+    address professorAddress;
 }
 
 enum Stage {
