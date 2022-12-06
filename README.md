@@ -1,6 +1,6 @@
 # Sample Academic System Dapp
 
-This project is being made for learning and for college purposes and aims to be a simple toy academic system dapp that will run on the Ethereum network, with the smart contract written in solidity.
+This project is being made for learning and for college purposes and aims to be a simple toy academic system dapp that will run on the Ethereum network, with the smart contracts written in solidity.
 
 ## Hardhat
 
