@@ -82,7 +82,7 @@ describe("AcademicContract", async function () {
     const subjectId = 1;
     const grade = 1000;
 
-    it("Should revert when a professor from subject 'X' professor sets a grade on subject 'Y'", async function () {
+    it("Should revert when a professor from subject 'X' sets a grade on subject 'Y'", async function () {
       const { academicContract, studentContract, subjectContract } =
         await loadFixture(deployContracts);
       const [_, blockchainProfessor, mathematicsProfessor] =
@@ -100,11 +100,29 @@ describe("AcademicContract", async function () {
       );
       await academicContract.setGradeLaunchStage();
       await expect(
-        await academicContract
+        academicContract
           .connect(mathematicsProfessor)
           .insertGrade(studentId, blockchainSubjectId, grade)
       ).to.be.revertedWith(
         "NotAuthorized: only professor from the specific subject can insert grades"
+      );
+    });
+
+    it("Should revert when a professor from the specific subject sets a grade with more or less than four digits", async function () {
+      const { academicContract, studentContract, subjectContract } =
+        await loadFixture(deployContracts);
+      const [_, professor] = await ethers.getSigners();
+      const invalidGrade = 10;
+
+      await studentContract.insertStudent(studentName);
+      await subjectContract.insertSubject("Blockchain", professor.address);
+      await academicContract.setGradeLaunchStage();
+      await expect(
+        academicContract
+          .connect(professor)
+          .insertGrade(studentId, subjectId, invalidGrade)
+      ).to.be.revertedWith(
+        "InvalidGradeDigits: grade must have exactly 4 digits. The first two ones are integers and the last two ones are the decimal part"
       );
     });
 
@@ -116,24 +134,10 @@ describe("AcademicContract", async function () {
       await studentContract.insertStudent(studentName);
       await subjectContract.insertSubject("Blockchain", professor.address);
       await expect(
-        await academicContract
+        academicContract
           .connect(professor)
           .insertGrade(studentId, subjectId, grade)
       ).to.be.revertedWith("InvalidStage: not on grade launch stage");
-    });
-
-    it("Should revert when owner sets a grade", async function () {
-      const { academicContract, studentContract, subjectContract } =
-        await loadFixture(deployContracts);
-      const [_, professor] = await ethers.getSigners();
-      await studentContract.insertStudent(studentName);
-      await subjectContract.insertSubject("Blockchain", professor.address);
-      await academicContract.setGradeLaunchStage();
-      await expect(
-        await academicContract.insertGrade(studentId, subjectId, grade)
-      ).to.be.revertedWith(
-        "NotAuthorized: only the subject professor can insert grades"
-      );
     });
   });
 });

@@ -4,11 +4,14 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./Modifiers.sol";
 import "./Types.sol";
+import "./ISubjectContract.sol";
 
 contract AcademicContract is Modifiers {
     address _studentContractAddress;
     address _subjectContractAddress;
     Stage public stage;
+
+    mapping(uint256 => mapping(uint256 => uint16)) studentIdToSubjectIdToGrade;
 
     constructor() {
         stage = Stage.STUDENT_REGISTRATION;
@@ -54,5 +57,38 @@ contract AcademicContract is Modifiers {
             subjectContractAdddress,
             "child contract address set"
         );
+    }
+
+    event GradeInserted(
+        uint256 studentId,
+        uint256 subjectId,
+        uint16 grade,
+        string message
+    );
+
+    function insertGrade(
+        uint256 studentId,
+        uint256 subjectId,
+        uint16 grade
+    ) public {
+        // check if msg.sender is the professor of the subject with that subject id
+        require(
+            stage == Stage.GRADE_LAUNCH,
+            "InvalidStage: not on grade launch stage"
+        );
+        require(
+            ISubjectContract(_subjectContractAddress)
+                .getSubjectById(subjectId)
+                .professorAddress == msg.sender,
+            "NotAuthorized: only professor from the specific subject can insert grades"
+        );
+        // require that grades has excatly 4 digits
+        require(
+            grade / 1000 >= 1 && grade / 1000 < 10,
+            "InvalidGradeDigits: grade must have exactly 4 digits. The first two ones are integers and the last two ones are the decimal part"
+        );
+        studentIdToSubjectIdToGrade[studentId][subjectId] = grade;
+
+        emit GradeInserted(studentId, subjectId, grade, "GradeInserted");
     }
 }

@@ -4,12 +4,14 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./Modifiers.sol";
 import "./Types.sol";
+import "./ISubjectContract.sol";
 
-contract SubjectContract is Modifiers {
+contract SubjectContract is Modifiers, ISubjectContract {
     address _academicContractAddress;
     uint256 lastSubjectId;
 
     mapping(uint256 => Subject) private subjectById;
+    mapping(uint256 => uint256[]) private studentsIdsBySubjectId;
 
     constructor(address academicContractAddress) {
         _academicContractAddress = academicContractAddress;
@@ -45,4 +47,15 @@ contract SubjectContract is Modifiers {
         require(subjectId <= lastSubjectId, "SubjectNotFound");
         return subjectById[subjectId];
     }
+
+    // function getStudentsIdsBySubjectId(uint256 subjectId)
+    //     external
+    //     view
+    //     onlyOwner(subjectId)
+    //     returns (uint256)
+    // {
+    //     require(
+
+    //     );
+    // }
 }
