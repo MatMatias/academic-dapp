@@ -1,3 +1,5 @@
+import { ethers } from "hardhat";
+import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { expect } from "chai";
 import { deployContracts } from "scripts/deployContracts";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
@@ -48,5 +50,90 @@ describe("AcademicContract", async function () {
     )
       .to.emit(academicContract, "ContractAddressSet")
       .withArgs(subjectContract.address, "child contract address set");
+  });
+
+  describe("Main flow", function () {
+    const studentId = 1;
+    const studentName = "Jane Doe";
+    const subjectId = 1;
+    const grade = 1000;
+
+    it("Should a professor from the specific subject be able to insert a grade on that specific subject", async function () {
+      const { academicContract, studentContract, subjectContract } =
+        await loadFixture(deployContracts);
+      const [_, professor] = await ethers.getSigners();
+
+      await studentContract.insertStudent(studentName);
+      await subjectContract.insertSubject("Blockchain", professor.address);
+      await academicContract.setGradeLaunchStage();
+      await expect(
+        await academicContract
+          .connect(professor)
+          .insertGrade(studentId, subjectId, grade)
+      )
+        .to.emit(academicContract, "GradeInserted")
+        .withArgs(studentId, subjectId, grade, "GradeInserted");
+    });
+  });
+
+  describe("Excpetions", function () {
+    const studentId = 1;
+    const studentName = "Jane Doe";
+    const subjectId = 1;
+    const grade = 1000;
+
+    it("Should revert when a professor from subject 'X' professor sets a grade on subject 'Y'", async function () {
+      const { academicContract, studentContract, subjectContract } =
+        await loadFixture(deployContracts);
+      const [_, blockchainProfessor, mathematicsProfessor] =
+        await ethers.getSigners();
+      const blockchainSubjectId = 1;
+
+      await studentContract.insertStudent(studentName);
+      await subjectContract.insertSubject(
+        "Blockchain",
+        blockchainProfessor.address
+      );
+      await subjectContract.insertSubject(
+        "Mathematics",
+        mathematicsProfessor.address
+      );
+      await academicContract.setGradeLaunchStage();
+      await expect(
+        await academicContract
+          .connect(mathematicsProfessor)
+          .insertGrade(studentId, blockchainSubjectId, grade)
+      ).to.be.revertedWith(
+        "NotAuthorized: only professor from the specific subject can insert grades"
+      );
+    });
+
+    it("Should revert when a professor sets a grade outside of the set grade launch stage", async function () {
+      const { academicContract, studentContract, subjectContract } =
+        await loadFixture(deployContracts);
+      const [_, professor] = await ethers.getSigners();
+
+      await studentContract.insertStudent(studentName);
+      await subjectContract.insertSubject("Blockchain", professor.address);
+      await expect(
+        await academicContract
+          .connect(professor)
+          .insertGrade(studentId, subjectId, grade)
+      ).to.be.revertedWith("InvalidStage: not on grade launch stage");
+    });
+
+    it("Should revert when owner sets a grade", async function () {
+      const { academicContract, studentContract, subjectContract } =
+        await loadFixture(deployContracts);
+      const [_, professor] = await ethers.getSigners();
+      await studentContract.insertStudent(studentName);
+      await subjectContract.insertSubject("Blockchain", professor.address);
+      await academicContract.setGradeLaunchStage();
+      await expect(
+        await academicContract.insertGrade(studentId, subjectId, grade)
+      ).to.be.revertedWith(
+        "NotAuthorized: only the subject professor can insert grades"
+      );
+    });
   });
 });
