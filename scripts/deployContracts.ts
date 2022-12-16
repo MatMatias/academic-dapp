@@ -6,7 +6,7 @@ async function deployContracts() {
   );
   const academicContract = await AcademicContractFactory.deploy();
   await academicContract.deployed();
-  // console.log(`Academic contract deployed to ${academicContract.address}`);
+  console.log(`Academic contract deployed to ${academicContract.address}`);
 
   const StudentContractFactory = await ethers.getContractFactory(
     "StudentContract"
@@ -15,7 +15,7 @@ async function deployContracts() {
     academicContract.address
   );
   await studentContract.deployed();
-  // console.log(`Student contract deployed to ${studentContract.address}`);
+  console.log(`Student contract deployed to ${studentContract.address}`);
 
   const SubjectContractFactory = await ethers.getContractFactory(
     "SubjectContract"
@@ -24,7 +24,16 @@ async function deployContracts() {
     academicContract.address
   );
   await subjectContract.deployed();
-  // console.log(`Subject contract deployed to ${subjectContract.address}`);
+  console.log(`Subject contract deployed to ${subjectContract.address}`);
+
+  await academicContract.setStudentContractAddress(studentContract.address);
+  console.log(
+    `Student contract address ${studentContract.address} set on academic contract`
+  );
+  await academicContract.setSubjectContractAddress(subjectContract.address);
+  console.log(
+    `Subject contract address ${subjectContract.address} set on academic contract`
+  );
 
   return {
     academicContract,
