@@ -5,6 +5,7 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./Modifiers.sol";
 import "./Types.sol";
 import "./ISubjectContract.sol";
+import "./IStudentContract.sol";
 
 contract AcademicContract is Modifiers {
     address _studentContractAddress;
@@ -84,11 +85,36 @@ contract AcademicContract is Modifiers {
         );
         // require that grades has excatly 4 digits
         require(
-            grade / 1000 >= 1 && grade / 1000 < 10,
-            "InvalidGradeDigits: grade must have exactly 4 digits. The first two ones are integers and the last two ones are the decimal part"
+            grade <= 1000,
+            "InvalidGradeDigits: grade must be smaller than 1000. The last two digits are the decimal part"
         );
         studentIdToSubjectIdToGrade[studentId][subjectId] = grade;
+        ISubjectContract(_subjectContractAddress).setStudentBySubject(
+            subjectId,
+            studentId
+        );
 
         emit GradeInserted(studentId, subjectId, grade, "GradeInserted");
+    }
+
+    function listGradesBySubjectId(uint256 subjectId)
+        public
+        view
+        returns (Student[] memory, uint16[] memory)
+    {
+        uint256[] memory studentsIds = ISubjectContract(_subjectContractAddress)
+            .getStudentsIdsBySubjectId(subjectId);
+
+        Student[] memory students = new Student[](studentsIds.length);
+        uint16[] memory grades = new uint16[](studentsIds.length);
+
+        for (uint256 i = 0; i < studentsIds.length; ++i) {
+            uint256 studentId = studentsIds[i];
+            students[i] = IStudentContract(_studentContractAddress)
+                .getStudentById(studentId);
+            grades[i] = studentIdToSubjectIdToGrade[studentId][subjectId];
+        }
+
+        return (students, grades);
     }
 }

@@ -18,6 +18,22 @@ contract SubjectContract is Modifiers, ISubjectContract {
         lastSubjectId = 0;
     }
 
+    modifier onlyValidSubjectId(uint256 subjectId) {
+        require(
+            subjectId > 0,
+            "InvalidSubjectId: subject id must be bigger than 0"
+        );
+        _;
+    }
+
+    modifier onlyExistentSubjectId(uint256 subjectId) {
+        require(
+            subjectId <= lastSubjectId,
+            "InvalidSubjectId: there are no subjects created with that subject id"
+        );
+        _;
+    }
+
     event SubjectInserted(Subject subject, string message);
 
     function insertSubject(
@@ -38,24 +54,42 @@ contract SubjectContract is Modifiers, ISubjectContract {
     function getSubjectById(uint256 subjectId)
         external
         view
+        override
+        onlyValidSubjectId(subjectId)
+        onlyExistentSubjectId(subjectId)
         returns (Subject memory)
     {
-        require(
-            subjectId > 0,
-            "InvalidSubjectId: subject id must be bigger than 0"
-        );
         require(subjectId <= lastSubjectId, "SubjectNotFound");
         return subjectById[subjectId];
     }
 
-    // function getStudentsIdsBySubjectId(uint256 subjectId)
-    //     external
-    //     view
-    //     onlyOwner(subjectId)
-    //     returns (uint256)
-    // {
-    //     require(
+    event StudentIdBySubjectSet(
+        uint256 studentId,
+        uint256 lastSubjectId,
+        string message
+    );
 
-    //     );
-    // }
+    function setStudentBySubject(uint256 subjectId, uint256 studentId)
+        external
+        override
+        onlyValidSubjectId(subjectId)
+    {
+        studentsIdsBySubjectId[subjectId].push(studentId);
+        emit StudentIdBySubjectSet(
+            studentId,
+            subjectId,
+            "StudentIdBySubjectIdSet"
+        );
+    }
+
+    function getStudentsIdsBySubjectId(uint256 subjectId)
+        external
+        view
+        override
+        onlyValidSubjectId(subjectId)
+        onlyExistentSubjectId(subjectId)
+        returns (uint256[] memory)
+    {
+        return studentsIdsBySubjectId[subjectId];
+    }
 }

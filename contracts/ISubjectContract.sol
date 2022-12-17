@@ -9,4 +9,11 @@ interface ISubjectContract {
         external
         view
         returns (Subject memory);
+
+    function setStudentBySubject(uint256 subjectId, uint256 studentId) external;
+
+    function getStudentsIdsBySubjectId(uint256 subjectId)
+        external
+        view
+        returns (uint256[] memory);
 }
