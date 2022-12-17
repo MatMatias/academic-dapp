@@ -52,7 +52,7 @@ describe("AcademicContract", async function () {
       .withArgs(subjectContract.address, "child contract address set");
   });
 
-  describe("Main flow", function () {
+  describe("Insert grade", function () {
     const studentId = 1;
     const studentName = "Jane Doe";
     const subjectId = 1;
@@ -112,7 +112,7 @@ describe("AcademicContract", async function () {
       const { academicContract, studentContract, subjectContract } =
         await loadFixture(deployContracts);
       const [_, professor] = await ethers.getSigners();
-      const invalidGrade = 10;
+      const invalidGrade = 1001;
 
       await studentContract.insertStudent(studentName);
       await subjectContract.insertSubject("Blockchain", professor.address);
@@ -122,7 +122,7 @@ describe("AcademicContract", async function () {
           .connect(professor)
           .insertGrade(studentId, subjectId, invalidGrade)
       ).to.be.revertedWith(
-        "InvalidGradeDigits: grade must have exactly 4 digits. The first two ones are integers and the last two ones are the decimal part"
+        "InvalidGradeDigits: grade must be smaller than 1000. The last two digits are the decimal part"
       );
     });
 
@@ -138,6 +138,89 @@ describe("AcademicContract", async function () {
           .connect(professor)
           .insertGrade(studentId, subjectId, grade)
       ).to.be.revertedWith("InvalidStage: not on grade launch stage");
+    });
+  });
+
+  describe("List grades by subject", function () {
+    const firstStudentId = 1;
+    const secondStudentId = 2;
+    const subjectId = 1;
+    const firstStudentName = "Jane Doe";
+    const secondStudentName = "John Doe";
+    const firstStudentGrade = 1000;
+    const secondStudentGrade = 850;
+
+    it("Should list grades by subject for a valid subject id", async function () {
+      const { academicContract, studentContract, subjectContract } =
+        await loadFixture(deployContracts);
+      const [_, professor] = await ethers.getSigners();
+
+      await studentContract.insertStudent(firstStudentName);
+      await studentContract.insertStudent(secondStudentName);
+      await subjectContract.insertSubject("Blockchain", professor.address);
+      await academicContract.setGradeLaunchStage();
+      await academicContract
+        .connect(professor)
+        .insertGrade(firstStudentId, subjectId, firstStudentGrade);
+      await academicContract
+        .connect(professor)
+        .insertGrade(secondStudentId, subjectId, secondStudentGrade);
+
+      const resp = await academicContract.listGradesBySubjectId(subjectId);
+      expect(resp[0][0].name).to.equal(firstStudentName);
+      expect(resp[1][0]).to.equal(1000);
+      expect(resp[0][1].name).to.equal(secondStudentName);
+      expect(resp[1][1]).to.equal(secondStudentGrade);
+    });
+
+    describe("Exceptions", async function () {
+      it("Should revert when given an invalid subject id", async function () {
+        const { academicContract, studentContract, subjectContract } =
+          await loadFixture(deployContracts);
+        const [_, professor] = await ethers.getSigners();
+        const invalidSubjectId = 0;
+
+        await studentContract.insertStudent(firstStudentName);
+        await studentContract.insertStudent(secondStudentName);
+        await subjectContract.insertSubject("Blockchain", professor.address);
+        await academicContract.setGradeLaunchStage();
+        await academicContract
+          .connect(professor)
+          .insertGrade(firstStudentId, subjectId, firstStudentGrade);
+        await academicContract
+          .connect(professor)
+          .insertGrade(secondStudentId, subjectId, secondStudentGrade);
+
+        await expect(
+          academicContract.listGradesBySubjectId(invalidSubjectId)
+        ).to.be.revertedWith(
+          "InvalidSubjectId: subject id must be bigger than 0"
+        );
+      });
+
+      it("Should revert when given an subject id that was not registered", async function () {
+        const { academicContract, studentContract, subjectContract } =
+          await loadFixture(deployContracts);
+        const [_, professor] = await ethers.getSigners();
+        const nonExistentSubjectId = 2;
+
+        await studentContract.insertStudent(firstStudentName);
+        await studentContract.insertStudent(secondStudentName);
+        await subjectContract.insertSubject("Blockchain", professor.address);
+        await academicContract.setGradeLaunchStage();
+        await academicContract
+          .connect(professor)
+          .insertGrade(firstStudentId, subjectId, firstStudentGrade);
+        await academicContract
+          .connect(professor)
+          .insertGrade(secondStudentId, subjectId, secondStudentGrade);
+
+        await expect(
+          academicContract.listGradesBySubjectId(nonExistentSubjectId)
+        ).to.be.revertedWith(
+          "InvalidSubjectId: there are no subjects created with that subject id"
+        );
+      });
     });
   });
 });

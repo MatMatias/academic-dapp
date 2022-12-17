@@ -37,14 +37,16 @@ describe("SubjectContract", async function () {
     expect(subject.professorAddress).to.equal(professor.address);
   });
 
-  it("Should revert with 'SubjectNotFound when using a subjectId that does not exist'", async function () {
+  it("Should revert when using a subjectId that does not exist'", async function () {
     const { subjectContract } = await loadFixture(deployContracts);
 
     const nonExistentSubjectId = 1;
 
     await expect(
       subjectContract.getSubjectById(nonExistentSubjectId)
-    ).to.be.revertedWith("SubjectNotFound");
+    ).to.be.revertedWith(
+      "InvalidSubjectId: there are no subjects created with that subject id"
+    );
   });
 
   it("Should revert with 'InvalidSubjectId: subject id must be bigger than 0'", async function () {
