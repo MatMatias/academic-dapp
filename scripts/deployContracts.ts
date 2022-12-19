@@ -11,9 +11,17 @@ async function deployContracts() {
   const StudentContractFactory = await ethers.getContractFactory(
     "StudentContract"
   );
+
+  const ACTokenFactory = await ethers.getContractFactory("ACToken");
+  const ACToken = await ACTokenFactory.deploy();
+  await ACToken.deployed();
+  console.log(`ACToken contract deployed to ${ACToken.address}`);
+
   const studentContract = await StudentContractFactory.deploy(
-    academicContract.address
+    academicContract.address,
+    ACToken.address
   );
+
   await studentContract.deployed();
   console.log(`Student contract deployed to ${studentContract.address}`);
 
@@ -21,7 +29,9 @@ async function deployContracts() {
     "SubjectContract"
   );
   const subjectContract = await SubjectContractFactory.deploy(
-    academicContract.address
+    academicContract.address,
+    studentContract.address,
+    ACToken.address
   );
   await subjectContract.deployed();
   console.log(`Subject contract deployed to ${subjectContract.address}`);
@@ -37,6 +47,7 @@ async function deployContracts() {
 
   return {
     academicContract,
+    ACToken,
     studentContract,
     subjectContract,
   };

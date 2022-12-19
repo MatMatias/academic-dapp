@@ -56,6 +56,7 @@ describe("AcademicContract", async function () {
     const studentName = "Jane Doe";
     const subjectId = 1;
     const grade = 1000;
+    const subjectPrice = 20;
 
     it("Should a professor from the specific subject be able to insert a grade on that specific subject", async function () {
       const { academicContract, studentContract, subjectContract } =
@@ -63,7 +64,11 @@ describe("AcademicContract", async function () {
       const [_, professor, student] = await ethers.getSigners();
 
       await studentContract.insertStudent(studentName, student.address);
-      await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.insertSubject(
+        "Blockchain",
+        professor.address,
+        subjectPrice
+      );
       await subjectContract.setStudentBySubject(subjectId, studentId);
       await academicContract.setGradeLaunchStage();
       await expect(
@@ -81,6 +86,8 @@ describe("AcademicContract", async function () {
     const studentName = "Jane Doe";
     const subjectId = 1;
     const grade = 1000;
+    const blockchainSubjectPrice = 20;
+    const mathematicsSubjectPrice = 15;
 
     it("Should revert when a professor from subject 'X' sets a grade on subject 'Y'", async function () {
       const { academicContract, studentContract, subjectContract } =
@@ -92,12 +99,14 @@ describe("AcademicContract", async function () {
       await studentContract.insertStudent(studentName, student.address);
       await subjectContract.insertSubject(
         "Blockchain",
-        blockchainProfessor.address
+        blockchainProfessor.address,
+        blockchainSubjectPrice
       );
       await subjectContract.setStudentBySubject(subjectId, studentId);
       await subjectContract.insertSubject(
         "Mathematics",
-        mathematicsProfessor.address
+        mathematicsProfessor.address,
+        mathematicsSubjectPrice
       );
       await academicContract.setGradeLaunchStage();
       await expect(
@@ -116,7 +125,11 @@ describe("AcademicContract", async function () {
       const invalidGrade = 1001;
 
       await studentContract.insertStudent(studentName, student.address);
-      await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.insertSubject(
+        "Blockchain",
+        professor.address,
+        blockchainSubjectPrice
+      );
       await subjectContract.setStudentBySubject(subjectId, studentId);
       await academicContract.setGradeLaunchStage();
       await expect(
@@ -134,7 +147,11 @@ describe("AcademicContract", async function () {
       const [_, professor, student] = await ethers.getSigners();
 
       await studentContract.insertStudent(studentName, student.address);
-      await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.insertSubject(
+        "Blockchain",
+        professor.address,
+        blockchainSubjectPrice
+      );
       await subjectContract.setStudentBySubject(subjectId, studentId);
       await expect(
         academicContract
@@ -152,6 +169,7 @@ describe("AcademicContract", async function () {
     const secondStudentName = "John Doe";
     const firstStudentGrade = 1000;
     const secondStudentGrade = 850;
+    const subjectPrice = 20;
 
     it("Should list grades by subject for a valid subject id", async function () {
       const { academicContract, studentContract, subjectContract } =
@@ -167,7 +185,11 @@ describe("AcademicContract", async function () {
         secondStudentName,
         secondStudent.address
       );
-      await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.insertSubject(
+        "Blockchain",
+        professor.address,
+        subjectPrice
+      );
       await subjectContract.setStudentBySubject(subjectId, firstStudentId);
       await subjectContract.setStudentBySubject(subjectId, secondStudentId);
       await academicContract.setGradeLaunchStage();
@@ -192,6 +214,7 @@ describe("AcademicContract", async function () {
         const [_, professor, firstStudent, secondStudent] =
           await ethers.getSigners();
         const invalidSubjectId = 0;
+        const subjectPrice = 20;
 
         await studentContract.insertStudent(
           firstStudentName,
@@ -201,7 +224,11 @@ describe("AcademicContract", async function () {
           secondStudentName,
           secondStudent.address
         );
-        await subjectContract.insertSubject("Blockchain", professor.address);
+        await subjectContract.insertSubject(
+          "Blockchain",
+          professor.address,
+          subjectPrice
+        );
         await subjectContract.setStudentBySubject(subjectId, firstStudentId);
         await subjectContract.setStudentBySubject(subjectId, secondStudentId);
         await academicContract.setGradeLaunchStage();
@@ -234,7 +261,11 @@ describe("AcademicContract", async function () {
           secondStudentName,
           secondStudent.address
         );
-        await subjectContract.insertSubject("Blockchain", professor.address);
+        await subjectContract.insertSubject(
+          "Blockchain",
+          professor.address,
+          subjectPrice
+        );
         await subjectContract.setStudentBySubject(subjectId, firstStudentId);
         await subjectContract.setStudentBySubject(subjectId, secondStudentId);
         await academicContract.setGradeLaunchStage();

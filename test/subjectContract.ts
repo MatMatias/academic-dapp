@@ -6,11 +6,18 @@ import { ethers } from "hardhat";
 
 describe("SubjectContract", async function () {
   const subjectName: string = "Blockchain";
+  const subjectPrice = 20;
 
   it("Should insert subject if owner", async function () {
     const { subjectContract } = await loadFixture(deployContracts);
     const [_, professor] = await ethers.getSigners();
-    await expect(subjectContract.insertSubject(subjectName, professor.address))
+    await expect(
+      subjectContract.insertSubject(
+        subjectName,
+        professor.address,
+        subjectPrice
+      )
+    )
       .to.emit(subjectContract, "SubjectInserted")
       .withArgs(anyValue, "success");
   });
@@ -22,7 +29,7 @@ describe("SubjectContract", async function () {
     await expect(
       subjectContract
         .connect(otherSigner)
-        .insertSubject(subjectName, professor.address)
+        .insertSubject(subjectName, professor.address, subjectPrice)
     ).to.be.revertedWith("NotAuthorized: not owner of the contract");
   });
 
@@ -30,7 +37,11 @@ describe("SubjectContract", async function () {
     const { subjectContract } = await loadFixture(deployContracts);
     const [_, professor] = await ethers.getSigners();
 
-    await subjectContract.insertSubject(subjectName, professor.address);
+    await subjectContract.insertSubject(
+      subjectName,
+      professor.address,
+      subjectPrice
+    );
     const subject = await subjectContract.getSubjectById(1);
     expect(subject.id).to.equal(1);
     expect(subject.name).to.equal(subjectName);

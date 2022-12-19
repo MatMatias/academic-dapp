@@ -5,16 +5,26 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./Modifiers.sol";
 import "./Types.sol";
 import "./ISubjectContract.sol";
+import "./IStudentContract.sol";
+import "./ACToken.sol";
 
 contract SubjectContract is Modifiers, ISubjectContract {
     address _academicContractAddress;
+    address _studentContractAddress;
+    address _ACTokenAddress;
     uint256 lastSubjectId;
 
     mapping(uint256 => Subject) private subjectById;
     mapping(uint256 => uint256[]) private studentsIdsBySubjectId;
 
-    constructor(address academicContractAddress) {
+    constructor(
+        address academicContractAddress,
+        address studentContractAddress,
+        address ACTokenAddress
+    ) {
         _academicContractAddress = academicContractAddress;
+        _studentContractAddress = studentContractAddress;
+        _ACTokenAddress = ACTokenAddress;
         lastSubjectId = 0;
     }
 
@@ -38,13 +48,15 @@ contract SubjectContract is Modifiers, ISubjectContract {
 
     function insertSubject(
         string calldata subjectName,
-        address professorAddress
+        address professorAddress,
+        uint256 subjectPrice
     ) public onlyOwner {
         lastSubjectId++;
         Subject memory subject = Subject(
             lastSubjectId,
             subjectName,
-            professorAddress
+            professorAddress,
+            subjectPrice
         );
         subjectById[lastSubjectId] = subject;
 
@@ -52,7 +64,7 @@ contract SubjectContract is Modifiers, ISubjectContract {
     }
 
     function getSubjectById(uint256 subjectId)
-        external
+        public
         view
         override
         onlyValidSubjectId(subjectId)
@@ -65,7 +77,10 @@ contract SubjectContract is Modifiers, ISubjectContract {
 
     event StudentIdBySubjectSet(
         uint256 studentId,
-        uint256 lastSubjectId,
+        uint256 subjectId,
+        address studentAddress,
+        uint256 amount,
+        uint256 studentNewBalance,
         string message
     );
 
@@ -77,9 +92,20 @@ contract SubjectContract is Modifiers, ISubjectContract {
         onlyOwner
     {
         studentsIdsBySubjectId[subjectId].push(studentId);
+        address studentAddress = IStudentContract(_studentContractAddress)
+            .getStudentById(studentId)
+            .studentAddress;
+        uint256 subjectPrice = getSubjectById(subjectId).price;
+        ACToken(_ACTokenAddress).burnStudentCredits(
+            studentAddress,
+            subjectPrice
+        );
         emit StudentIdBySubjectSet(
             studentId,
             subjectId,
+            studentAddress,
+            subjectPrice,
+            ACToken(_ACTokenAddress).balanceOf(studentAddress),
             "StudentIdBySubjectIdSet"
         );
     }

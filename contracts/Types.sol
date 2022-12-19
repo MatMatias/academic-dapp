@@ -12,6 +12,7 @@ struct Subject {
     uint256 id;
     string name;
     address professorAddress;
+    uint256 price;
 }
 
 enum Stage {

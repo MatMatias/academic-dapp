@@ -5,19 +5,27 @@ pragma solidity >=0.7.0 <0.9.0;
 import "./Modifiers.sol";
 import "./Types.sol";
 import "./IStudentContract.sol";
+import "./ACToken.sol";
 
 contract StudentContract is Modifiers, IStudentContract {
     address _academicContractAddress;
+    address _ACTokenAddress;
     uint256 lastStudentId;
 
     mapping(uint256 => Student) private studentById;
 
-    constructor(address academicContractAddress) {
+    constructor(address academicContractAddress, address ACTokenAddress) {
         _academicContractAddress = academicContractAddress;
+        _ACTokenAddress = ACTokenAddress;
         lastStudentId = 0;
     }
 
-    event StudentInserted(Student student, string message);
+    event StudentInserted(
+        Student student,
+        address studentAddress,
+        uint256 studentBalance,
+        string message
+    );
 
     function insertStudent(string calldata name, address studentAddress)
         public
@@ -26,8 +34,13 @@ contract StudentContract is Modifiers, IStudentContract {
         lastStudentId++;
         Student memory student = Student(lastStudentId, name, studentAddress);
         studentById[lastStudentId] = student;
-
-        emit StudentInserted(student, "success");
+        ACToken(_ACTokenAddress).mintStudentCredits(studentAddress);
+        emit StudentInserted(
+            student,
+            studentAddress,
+            ACToken(_ACTokenAddress).balanceOf(studentAddress),
+            "success"
+        );
     }
 
     function getLastStudentId() public view returns (uint256) {

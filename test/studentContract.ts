@@ -12,7 +12,14 @@ describe("StudentContract", function () {
     const [_, student] = await ethers.getSigners();
     await expect(studentContract.insertStudent(studentName, student.address))
       .to.emit(studentContract, "StudentInserted")
-      .withArgs(anyValue, "success");
+      .withArgs(anyValue, student.address, 1000, "success");
+  });
+
+  it("Should student gain 1000 ACToken when inserted", async function () {
+    const { studentContract, ACToken } = await loadFixture(deployContracts);
+    const [_, student] = await ethers.getSigners();
+    await studentContract.insertStudent(studentName, student.address);
+    expect(await ACToken.balanceOf(student.address)).to.equal(1000);
   });
 
   it("Should revert with 'NotAuthorized: not owner of the contract' when inserting a new student if not owner", async function () {
