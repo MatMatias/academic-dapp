@@ -73,6 +73,8 @@ contract SubjectContract is Modifiers, ISubjectContract {
         external
         override
         onlyValidSubjectId(subjectId)
+        onlyValidStudentId(studentId)
+        onlyOwner
     {
         studentsIdsBySubjectId[subjectId].push(studentId);
         emit StudentIdBySubjectSet(

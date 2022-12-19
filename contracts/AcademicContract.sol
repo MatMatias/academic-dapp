@@ -88,11 +88,22 @@ contract AcademicContract is Modifiers {
             grade <= 1000,
             "InvalidGradeDigits: grade must be smaller than 1000. The last two digits are the decimal part"
         );
-        studentIdToSubjectIdToGrade[studentId][subjectId] = grade;
-        ISubjectContract(_subjectContractAddress).setStudentBySubject(
-            subjectId,
-            studentId
+
+        uint256[] memory studentsIdsOnSubject = ISubjectContract(
+            _subjectContractAddress
+        ).getStudentsIdsBySubjectId(subjectId);
+        bool isStudentOnSubject = false;
+        for (uint256 i = 0; i < studentsIdsOnSubject.length; ++i) {
+            if (studentsIdsOnSubject[i] == studentId) {
+                isStudentOnSubject = true;
+                break;
+            }
+        }
+        require(
+            isStudentOnSubject == true,
+            "StudentNotOnSubject: student must be registered on that subject"
         );
+        studentIdToSubjectIdToGrade[studentId][subjectId] = grade;
 
         emit GradeInserted(studentId, subjectId, grade, "GradeInserted");
     }

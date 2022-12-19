@@ -4,8 +4,9 @@ pragma solidity >=0.7.0 <0.9.0;
 
 import "./Modifiers.sol";
 import "./Types.sol";
+import "./IStudentContract.sol";
 
-contract StudentContract is Modifiers {
+contract StudentContract is Modifiers, IStudentContract {
     address _academicContractAddress;
     uint256 lastStudentId;
 
@@ -24,6 +25,10 @@ contract StudentContract is Modifiers {
         studentById[lastStudentId] = student;
 
         emit StudentInserted(student, "success");
+    }
+
+    function getLastStudentId() public view returns (uint256) {
+        return lastStudentId;
     }
 
     function getStudentById(uint256 studentId)

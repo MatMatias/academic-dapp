@@ -65,6 +65,7 @@ describe("AcademicContract", async function () {
 
       await studentContract.insertStudent(studentName);
       await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.setStudentBySubject(subjectId, studentId);
       await academicContract.setGradeLaunchStage();
       await expect(
         await academicContract
@@ -94,6 +95,7 @@ describe("AcademicContract", async function () {
         "Blockchain",
         blockchainProfessor.address
       );
+      await subjectContract.setStudentBySubject(subjectId, studentId);
       await subjectContract.insertSubject(
         "Mathematics",
         mathematicsProfessor.address
@@ -116,6 +118,7 @@ describe("AcademicContract", async function () {
 
       await studentContract.insertStudent(studentName);
       await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.setStudentBySubject(subjectId, studentId);
       await academicContract.setGradeLaunchStage();
       await expect(
         academicContract
@@ -133,6 +136,7 @@ describe("AcademicContract", async function () {
 
       await studentContract.insertStudent(studentName);
       await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.setStudentBySubject(subjectId, studentId);
       await expect(
         academicContract
           .connect(professor)
@@ -158,6 +162,8 @@ describe("AcademicContract", async function () {
       await studentContract.insertStudent(firstStudentName);
       await studentContract.insertStudent(secondStudentName);
       await subjectContract.insertSubject("Blockchain", professor.address);
+      await subjectContract.setStudentBySubject(subjectId, firstStudentId);
+      await subjectContract.setStudentBySubject(subjectId, secondStudentId);
       await academicContract.setGradeLaunchStage();
       await academicContract
         .connect(professor)
@@ -183,6 +189,8 @@ describe("AcademicContract", async function () {
         await studentContract.insertStudent(firstStudentName);
         await studentContract.insertStudent(secondStudentName);
         await subjectContract.insertSubject("Blockchain", professor.address);
+        await subjectContract.setStudentBySubject(subjectId, firstStudentId);
+        await subjectContract.setStudentBySubject(subjectId, secondStudentId);
         await academicContract.setGradeLaunchStage();
         await academicContract
           .connect(professor)
@@ -207,6 +215,8 @@ describe("AcademicContract", async function () {
         await studentContract.insertStudent(firstStudentName);
         await studentContract.insertStudent(secondStudentName);
         await subjectContract.insertSubject("Blockchain", professor.address);
+        await subjectContract.setStudentBySubject(subjectId, firstStudentId);
+        await subjectContract.setStudentBySubject(subjectId, secondStudentId);
         await academicContract.setGradeLaunchStage();
         await academicContract
           .connect(professor)
