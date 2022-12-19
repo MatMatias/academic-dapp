@@ -9,24 +9,27 @@ describe("StudentContract", function () {
 
   it("Should insert new student if owner", async function () {
     const { studentContract } = await loadFixture(deployContracts);
-    await expect(studentContract.insertStudent(studentName))
+    const [_, student] = await ethers.getSigners();
+    await expect(studentContract.insertStudent(studentName, student.address))
       .to.emit(studentContract, "StudentInserted")
       .withArgs(anyValue, "success");
   });
 
   it("Should revert with 'NotAuthorized: not owner of the contract' when inserting a new student if not owner", async function () {
     const { studentContract } = await loadFixture(deployContracts);
-    const [_, otherSigner] = await ethers.getSigners();
+    const [_, otherSigner, student] = await ethers.getSigners();
 
     await expect(
-      studentContract.connect(otherSigner).insertStudent(studentName)
+      studentContract
+        .connect(otherSigner)
+        .insertStudent(studentName, student.address)
     ).to.be.revertedWith("NotAuthorized: not owner of the contract");
   });
 
   it("Should return student by id", async function () {
     const { studentContract } = await loadFixture(deployContracts);
-
-    await studentContract.insertStudent(studentName);
+    const [_, studentSigner] = await ethers.getSigners();
+    await studentContract.insertStudent(studentName, studentSigner.address);
     const student = await studentContract.getStudentById(1);
     expect(student.id).to.equal(1);
     expect(student.name).to.equal(studentName);

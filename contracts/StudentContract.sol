@@ -19,9 +19,12 @@ contract StudentContract is Modifiers, IStudentContract {
 
     event StudentInserted(Student student, string message);
 
-    function insertStudent(string calldata name) public onlyOwner {
+    function insertStudent(string calldata name, address studentAddress)
+        public
+        onlyOwner
+    {
         lastStudentId++;
-        Student memory student = Student(lastStudentId, name);
+        Student memory student = Student(lastStudentId, name, studentAddress);
         studentById[lastStudentId] = student;
 
         emit StudentInserted(student, "success");
