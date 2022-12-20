@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
-import * as contractAddresses from "../contractAddresses.json";
-import * as academicContractArtifact from "../../../artifacts/contracts/AcademicContract.sol/AcademicContract.json";
-import * as aCTokenContractArtifact from "../../../artifacts/contracts/ACToken.sol/ACToken.json";
-import * as studentContractArtifact from "../../../artifacts/contracts/StudentContract.sol/StudentContract.json";
-import * as subjectContractArtifact from "../../../artifacts/contracts/SubjectContract.sol/SubjectContract.json";
+const contractAddresses = require("../contractAddresses.json");
+const academicContractArtifact = require("../../../artifacts/contracts/AcademicContract.sol/AcademicContract.json");
+const aCTokenContractArtifact = require("../../../artifacts/contracts/ACToken.sol/ACToken.json");
+const studentContractArtifact = require("../../../artifacts/contracts/StudentContract.sol/StudentContract.json");
+const subjectContractArtifact = require("../../../artifacts/contracts/SubjectContract.sol/SubjectContract.json");
 
 const academicContract = new ethers.Contract(
   contractAddresses.academicContract,
