@@ -6,16 +6,19 @@ import "./Modifiers.sol";
 import "./Types.sol";
 import "./ISubjectContract.sol";
 import "./IStudentContract.sol";
+import "./AcademicCertificate.sol";
 
 contract AcademicContract is Modifiers {
     address _studentContractAddress;
     address _subjectContractAddress;
+    address _academicCertificateAddress;
     Stage public stage;
 
     mapping(uint256 => mapping(uint256 => uint16)) studentIdToSubjectIdToGrade;
 
-    constructor() {
+    constructor(address academicCertificateAddress) {
         stage = Stage.STUDENT_REGISTRATION;
+        _academicCertificateAddress = academicCertificateAddress;
     }
 
     event SpecificStageSet(Stage stage, string message);
@@ -106,6 +109,26 @@ contract AcademicContract is Modifiers {
         studentIdToSubjectIdToGrade[studentId][subjectId] = grade;
 
         emit GradeInserted(studentId, subjectId, grade, "GradeInserted");
+    }
+
+    event CertificateAwarded(
+        uint256 studentId,
+        string tokenURI,
+        address studentAddress,
+        string message
+    );
+
+    function awardCertificate(uint256 studentId) public {
+        string memory tokenURI = "link";
+        address studentAddress = IStudentContract(_studentContractAddress)
+            .getStudentById(studentId)
+            .studentAddress;
+        AcademicCertificate(_academicCertificateAddress).awardCertificate(
+            studentAddress,
+            tokenURI
+        );
+
+        emit CertificateAwarded(studentId, tokenURI, studentAddress, "success");
     }
 
     function listGradesBySubjectId(uint256 subjectId)

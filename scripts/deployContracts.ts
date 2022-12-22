@@ -1,10 +1,22 @@
 import { ethers } from "hardhat";
+import fs from "fs";
 
 async function deployContracts() {
+  const AcademicCertificateFactory = await ethers.getContractFactory(
+    "AcademicCertificate"
+  );
+  const academicCertificateContract = await AcademicCertificateFactory.deploy();
+  await academicCertificateContract.deployed();
+  console.log(
+    `Academic contract deployed to ${academicCertificateContract.address}`
+  );
+
   const AcademicContractFactory = await ethers.getContractFactory(
     "AcademicContract"
   );
-  const academicContract = await AcademicContractFactory.deploy();
+  const academicContract = await AcademicContractFactory.deploy(
+    academicCertificateContract.address
+  );
   await academicContract.deployed();
   console.log(`Academic contract deployed to ${academicContract.address}`);
 
@@ -43,6 +55,26 @@ async function deployContracts() {
   await academicContract.setSubjectContractAddress(subjectContract.address);
   console.log(
     `Subject contract address ${subjectContract.address} set on academic contract`
+  );
+
+  const contractAddresses = {
+    academicContract: academicContract.address,
+    aCTokenContract: ACToken.address,
+    studentContract: studentContract.address,
+    subjectContract: subjectContract.address,
+  };
+
+  fs.writeFile(
+    "../contractAddresses.json",
+    JSON.stringify(contractAddresses, null, 4),
+    function (err) {
+      if (err) {
+        throw err;
+      }
+      console.log(
+        "Contract Addresses written to contractAddresses.json on the root directory."
+      );
+    }
   );
 
   return {

@@ -1,5 +1,6 @@
 import { ethers } from "hardhat";
 import { expect } from "chai";
+import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
 import { deployContracts } from "scripts/deployContracts";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { Stage } from "./enums";
@@ -78,6 +79,35 @@ describe("AcademicContract", async function () {
       )
         .to.emit(academicContract, "GradeInserted")
         .withArgs(studentId, subjectId, grade, "GradeInserted");
+    });
+
+    describe("Award certificate", function () {
+      const studentId = 1;
+      const studentName = "Jane Doe";
+      const subjectId = 1;
+      const grade = 1000;
+      const subjectPrice = 20;
+
+      it("Should award student with certificate ERC721", async function () {
+        const { academicContract, studentContract, subjectContract } =
+          await loadFixture(deployContracts);
+        const [_, professor, student] = await ethers.getSigners();
+
+        await studentContract.insertStudent(studentName, student.address);
+        await subjectContract.insertSubject(
+          "Blockchain",
+          professor.address,
+          subjectPrice
+        );
+        await subjectContract.setStudentBySubject(subjectId, studentId);
+        await academicContract.setGradeLaunchStage();
+        await academicContract
+          .connect(professor)
+          .insertGrade(studentId, subjectId, grade);
+        await expect(academicContract.awardCertificate(studentId))
+          .to.emit(academicContract, "CertificateAwarded")
+          .withArgs(studentId, anyValue, student.address, "success");
+      });
     });
   });
 
