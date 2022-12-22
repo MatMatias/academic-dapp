@@ -10,6 +10,11 @@ const config: HardhatUserConfig = {
     cache: "./cache",
     artifacts: "./artifacts",
   },
+  networks: {
+    local: {
+      url: "http://localhost:8545",
+    },
+  },
 };
 
 export default config;
