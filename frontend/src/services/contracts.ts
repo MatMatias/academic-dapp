@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import provider from "./provider";
 const contractAddresses = require("../contractAddresses.json");
 const academicContractArtifact = require("../../../artifacts/contracts/AcademicContract.sol/AcademicContract.json");
 const aCTokenContractArtifact = require("../../../artifacts/contracts/ACToken.sol/ACToken.json");
@@ -7,22 +8,26 @@ const subjectContractArtifact = require("../../../artifacts/contracts/SubjectCon
 
 const academicContract = new ethers.Contract(
   contractAddresses.academicContract,
-  academicContractArtifact.abi
+  academicContractArtifact.abi,
+  provider
 );
 
 const aCTokenContract = new ethers.Contract(
   contractAddresses.aCTokenContract,
-  aCTokenContractArtifact.abi
+  aCTokenContractArtifact.abi,
+  provider
 );
 
 const studentContract = new ethers.Contract(
   contractAddresses.studentContract,
-  studentContractArtifact.abi
+  studentContractArtifact.abi,
+  provider
 );
 
 const subjectContract = new ethers.Contract(
   contractAddresses.subjectContract,
-  subjectContractArtifact.abi
+  subjectContractArtifact.abi,
+  provider
 );
 
 const contracts = {
