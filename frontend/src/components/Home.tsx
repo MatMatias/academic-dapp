@@ -8,11 +8,12 @@ const Home = () => {
   useEffect(() => {
     async function connect() {
       await provider.send("eth_requestAccounts", []);
+      console.log(await provider.getNetwork());
 
       const signer = provider.getSigner();
-      console.log(signer);
-      const blockNumber = await provider.getBlockNumber();
-      console.log(blockNumber);
+      console.log(await signer.getAddress());
+
+      console.log(contracts.academic);
     }
 
     connect();
