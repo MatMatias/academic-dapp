@@ -8,7 +8,7 @@ async function deployContracts() {
   const academicCertificateContract = await AcademicCertificateFactory.deploy();
   await academicCertificateContract.deployed();
   console.log(
-    `Academic contract deployed to ${academicCertificateContract.address}`
+    `Academic certificate contract deployed to ${academicCertificateContract.address}`
   );
 
   const AcademicContractFactory = await ethers.getContractFactory(
