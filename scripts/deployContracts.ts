@@ -65,7 +65,7 @@ async function deployContracts() {
   };
 
   fs.writeFile(
-    "../contractAddresses.json",
+    "./contractAddresses.json",
     JSON.stringify(contractAddresses, null, 4),
     function (err) {
       if (err) {
@@ -84,5 +84,7 @@ async function deployContracts() {
     subjectContract,
   };
 }
+
+deployContracts();
 
 export { deployContracts };
