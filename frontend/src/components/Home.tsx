@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { ethers } from "ethers";
-import * as contractAddresses from "../contractAddresses.json";
 import provider from "../services/provider";
 import contracts from "../services/contracts";
 
@@ -13,7 +11,7 @@ const Home = () => {
       const signer = provider.getSigner();
       console.log(await signer.getAddress());
 
-      console.log(contracts.academic);
+      console.log(await contracts.academic.owner());
     }
 
     connect();

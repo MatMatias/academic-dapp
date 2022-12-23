@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import provider from "./provider";
-const contractAddresses = require("../contractAddresses.json");
+const contractAddresses = require("../../../contractAddresses.json");
 const academicContractArtifact = require("../../../artifacts/contracts/AcademicContract.sol/AcademicContract.json");
 const aCTokenContractArtifact = require("../../../artifacts/contracts/ACToken.sol/ACToken.json");
 const studentContractArtifact = require("../../../artifacts/contracts/StudentContract.sol/StudentContract.json");
