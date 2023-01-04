@@ -10,7 +10,7 @@ import "./ACToken.sol";
 contract StudentContract is Modifiers, IStudentContract {
     address _academicContractAddress;
     address _ACTokenAddress;
-    uint256 public lastStudentId;
+    uint256 lastStudentId;
 
     mapping(uint256 => Student) private studentById;
 
