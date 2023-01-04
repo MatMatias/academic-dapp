@@ -12,7 +12,7 @@ contract SubjectContract is Modifiers, ISubjectContract {
     address _academicContractAddress;
     address _studentContractAddress;
     address _ACTokenAddress;
-    uint256 lastSubjectId;
+    uint256 public lastSubjectId;
 
     mapping(uint256 => Subject) private subjectById;
     mapping(uint256 => uint256[]) private studentsIdsBySubjectId;
