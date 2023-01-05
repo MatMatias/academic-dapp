@@ -1,3 +1,4 @@
 import { Roles } from "./roles";
+import { AcademicPhases } from "./academicPhases";
 
-export { Roles };
+export { Roles, AcademicPhases };

@@ -43,7 +43,7 @@ const Home = () => {
     }
 
     if (signerRole === Roles.Professor) {
-      return <Professor />;
+      return <Professor signer={signer} />;
     }
 
     if (signerRole === Roles.Student) {

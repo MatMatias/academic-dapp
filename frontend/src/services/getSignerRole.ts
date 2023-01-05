@@ -8,8 +8,10 @@ async function checkIfSignerIsProfessor(
   const lastSubjectId: BigNumber = await contracts.subject.lastSubjectId();
 
   for (let subjectId = lastSubjectId.toNumber(); subjectId > 0; --subjectId) {
-    const searchedProfessorAddress: string =
-      await contracts.subject.getSubjectById(subjectId);
+    const searchedProfessor: any = await contracts.subject.getSubjectById(
+      subjectId
+    );
+    const searchedProfessorAddress: string = searchedProfessor[2];
     if (searchedProfessorAddress === signerAddress) {
       return true;
     }
@@ -22,8 +24,10 @@ async function checkIfSignerIsStudent(signerAddress: string): Promise<boolean> {
   const lastStudentId: BigNumber = await contracts.student.lastStudentId();
 
   for (let studentId = lastStudentId.toNumber(); studentId > 0; --studentId) {
-    const searchedStudentAddress: string =
-      await contracts.student.getStudentById(studentId);
+    const searchedStudent: any = await contracts.student.getStudentById(
+      studentId
+    );
+    const searchedStudentAddress: string = "";
     if (searchedStudentAddress === signerAddress) {
       return true;
     }
