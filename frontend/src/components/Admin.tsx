@@ -22,11 +22,30 @@ const Admin = ({ signer }: { signer: JsonRpcSigner }) => {
   const [subjectToBeCheckedId, setSubjectToBeCheckedId] = useState<
     number | undefined
   >();
-  const [gradesBySubject, setGradesBySubject] = useState<unknown | undefined>();
+  const [gradesBySubject, setGradesBySubject] = useState<any>();
 
-  /* work in progress */
+  const formattedGrades: {
+    studentName: string;
+    studentAddress: string;
+    grade: number;
+  }[] = [];
+
   if (gradesBySubject) {
-    console.log("Grades by Subject", gradesBySubject);
+    for (let i = 0; i < gradesBySubject[0].length; ++i) {
+      const studentName = gradesBySubject[0][i][1];
+      const studentAddress = gradesBySubject[0][i][2];
+      const grade = gradesBySubject[1][i];
+      const formattedGrade: {
+        studentName: string;
+        studentAddress: string;
+        grade: number;
+      } = {
+        studentName: studentName,
+        studentAddress: studentAddress,
+        grade: grade,
+      };
+      formattedGrades.push(formattedGrade);
+    }
   }
 
   useEffect(() => {
@@ -211,7 +230,7 @@ const Admin = ({ signer }: { signer: JsonRpcSigner }) => {
                 evt.preventDefault();
                 await contracts.subject
                   .connect(signer)
-                  .setStudentBySubject(studentId, subjectId);
+                  .setStudentBySubject(subjectId, studentId);
               }}
             >
               <div
@@ -252,6 +271,19 @@ const Admin = ({ signer }: { signer: JsonRpcSigner }) => {
             style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
           >
             <h2>Consultations</h2>
+            {formattedGrades.length > 0 && (
+              <ul>
+                {formattedGrades.map((formattedGrade, index) => {
+                  return (
+                    <li key={index}>
+                      <p>Student address: {formattedGrade.studentAddress}</p>
+                      <p>Student name: {formattedGrade.studentName}</p>
+                      <p>Grade: {formattedGrade.grade}</p>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
             <div
               style={{
                 display: "flex",

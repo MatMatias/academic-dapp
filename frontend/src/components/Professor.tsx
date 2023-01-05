@@ -5,6 +5,7 @@ import contracts from "../services/contracts";
 const Professor = ({ signer }: { signer: JsonRpcSigner }) => {
   const [studentId, setStudentId] = useState<number | undefined>();
   const [subjectId, setSubjectId] = useState<number | undefined>();
+  const [grade, setGrade] = useState<number | undefined>();
 
   return (
     <Fragment>
@@ -12,14 +13,14 @@ const Professor = ({ signer }: { signer: JsonRpcSigner }) => {
         <h1>Professor panel</h1>
       </header>
       <main style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-        <h3>Set Student on Subject</h3>
+        <h3>Launch Grade</h3>
         <form
           style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
           onSubmit={async (evt: SyntheticEvent) => {
             evt.preventDefault();
-            await contracts.subject
+            await contracts.academic
               .connect(signer)
-              .setStudentBySubjectId(studentId, subjectId);
+              .insertGrade(studentId, subjectId, grade);
           }}
         >
           <div
@@ -46,6 +47,15 @@ const Professor = ({ signer }: { signer: JsonRpcSigner }) => {
               onChange={(evt) =>
                 setStudentId(Number.parseInt(evt.target.value))
               }
+            />
+          </div>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "0.25rem" }}
+          >
+            <label>Grade</label>
+            <input
+              type="text"
+              onChange={(evt) => setGrade(Number.parseInt(evt.target.value))}
             />
           </div>
           <button>Insert grade</button>
